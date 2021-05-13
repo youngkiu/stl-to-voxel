@@ -1,3 +1,4 @@
+import os
 import math
 import perimeter
 import psutil
@@ -7,8 +8,12 @@ from functools import reduce
 
 
 def meshToPlane(mesh, bounding_box, pad):
-    num_cpus = psutil.cpu_count(logical=False)
-    ray.init(num_cpus=num_cpus)
+    if os.getenv('DEBUG'):
+        # https://groups.google.com/g/ray-dev/c/7euaVHZNhEw
+        ray.init(local_mode=True)
+    else:
+        num_cpus = psutil.cpu_count(logical=False)
+        ray.init(num_cpus=num_cpus)
 
     result_ids = []
 
@@ -63,16 +68,7 @@ def linearInterpolation(p1, p2, distance):
     :param distance: Between 0 and 1, Lower numbers return points closer to p1.
     :return: A point on the line between p1 and p2
     '''
-    x1, y1, z1 = p1
-    x2, y2, z2 = p2
-    slopex = x1 - x2
-    slopey = y1 - y2
-    slopez = z1 - z2
-    return (
-        x1 - distance * slopex,
-        y1 - distance * slopey,
-        z1 - distance * slopez
-    )
+    return p1 * (1-distance) + p2 * distance
 
 
 def triangleToIntersectingLines(triangle, height, pixels, lines):
@@ -115,46 +111,23 @@ def whereLineCrossesZ(p1, p2, z):
     return linearInterpolation(p1, p2, distance)
 
 
-def calculateMinMax(mesh):
-    allPoints = [point for tri in mesh for point in tri]
-    mins = [0, 0, 0]
-    maxs = [0, 0, 0]
-    for i in range(3):
-        mins[i] = min(allPoints, key=lambda tri: tri[i])[i]
-        maxs[i] = max(allPoints, key=lambda tri: tri[i])[i]
+def scaleAndShiftMesh(mesh, resolution):
+    v_min = mesh.min(axis=(0, 1))
+    v_max = mesh.max(axis=(0, 1))
+    amplitude = v_max - v_min
+    xy_scale = float(resolution - 1) / max(amplitude[:2])
 
-    for i, axis in enumerate(['x', 'y', 'z']):
-        print(f'{axis}: {mins[i]} ~ {maxs[i]}')
-    return mins, maxs
+    for i, shift in enumerate(v_min):
+        mesh[..., i] = (mesh[..., i] - shift) * xy_scale
 
-
-def calculateScaleAndShift(mesh, resolution):
-    mins, maxs = calculateMinMax(mesh)
-    shift = [-min for min in mins]
-    xyscale = float(resolution - 1) / (max(maxs[0] - mins[0], maxs[1] - mins[1]))
-    # TODO: Change this to return one scale. If not, verify svx exporting still works.
-    scale = [xyscale, xyscale, xyscale]
-    z_resolution = (maxs[2] - mins[2]) * xyscale
+    z_resolution = amplitude[2] * xy_scale
     if z_resolution == math.ceil(z_resolution):
         z_resolution += 1
     else:
         z_resolution = math.ceil(z_resolution)
     bounding_box = [resolution, resolution, int(z_resolution)]
-    return (scale, shift, bounding_box)
 
-
-def scaleAndShiftMesh(mesh, scale, shift):
-    adjusted_mesh = []
-    for tri in mesh:
-        newTri = []
-        for pt in tri:
-            newpt = []
-            for p, sh, sc in zip(pt, shift, scale):
-                newpt.append((p + sh) * sc)
-            newTri.append(newpt)
-        adjusted_mesh.append(newTri)
-    calculateMinMax(adjusted_mesh)
-    return adjusted_mesh
+    return mesh, xy_scale, -v_min, bounding_box
 
 
 def generateTriEvents(mesh):
