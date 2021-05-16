@@ -20,7 +20,7 @@ setup(
     packages=[''],
     python_requires='>=3',
     package_data={
-        'stl-to-voxel': glob.glob(os.path.join('data', '*.[sS][tT][lL]'))
+        '': glob.glob(os.path.join('data', '*.[sS][tT][lL]'))
     },
     include_package_data=True,
     zip_safe=False,
