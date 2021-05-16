@@ -6,8 +6,8 @@ with open("README.md", "r") as f:
     LONG_DESCRIPTION = f.read()
 
 setup(
-    name='stl-to-voxel',
-    version='1.0',
+    name='stltovoxel',
+    version='0.9',
     description='Turn STL files into voxels, images, and videos',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
@@ -20,7 +20,7 @@ setup(
     packages=find_packages(exclude=['wiki']),
     python_requires='>=3',
     package_data={
-        'stl-to-voxel': glob.glob(os.path.join('data', '*.[sS][tT][lL]'))
+        'stltovoxel': glob.glob(os.path.join('data', '*.[sS][tT][lL]'))
     },
     include_package_data=True,
     zip_safe=False,
