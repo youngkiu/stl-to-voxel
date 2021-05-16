@@ -7,7 +7,7 @@ with open("README.md", "r") as f:
 
 setup(
     name='stl-to-voxel',
-    version='0.9.0',
+    version='0.9.1',
     description='Turn STL files into voxels, images, and videos',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
