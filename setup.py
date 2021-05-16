@@ -1,13 +1,13 @@
 import os
 import glob
-from setuptools import setup, find_packages
+from setuptools import setup
 
 with open("README.md", "r") as f:
     LONG_DESCRIPTION = f.read()
 
 setup(
     name='stltovoxel',
-    version='0.9',
+    version='0.9.0',
     description='Turn STL files into voxels, images, and videos',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
@@ -17,7 +17,8 @@ setup(
     url='https://github.com/cpederkoff/stl-to-voxel',
     download_url='https://github.com/cpederkoff/stl-to-voxel/releases',
     install_requires=['numpy', 'Pillow', 'matplotlib'],
-    packages=find_packages(exclude=['wiki']),
+    packages=['stlvoxel'],
+    package_dir={'stlvoxel': ''},
     python_requires='>=3',
     package_data={
         'stltovoxel': glob.glob(os.path.join('data', '*.[sS][tT][lL]'))
