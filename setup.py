@@ -6,7 +6,7 @@ with open("README.md", "r") as f:
     LONG_DESCRIPTION = f.read()
 
 setup(
-    name='stltovoxel',
+    name='stl-to-voxel',
     version='0.9.0',
     description='Turn STL files into voxels, images, and videos',
     long_description=LONG_DESCRIPTION,
@@ -18,10 +18,10 @@ setup(
     download_url='https://github.com/cpederkoff/stl-to-voxel/releases',
     install_requires=['numpy', 'Pillow', 'matplotlib'],
     packages=['test'],
-    py_modules=['perimeter', 'slice', 'stl_reader', 'stlvoxel', 'util'],
+    py_modules=['perimeter', 'slice', 'stl_reader', 'stltovoxel', 'util'],
     python_requires='>=3',
     package_data={
-        'stltovoxel': glob.glob(os.path.join('data', '*.[sS][tT][lL]'))
+        'stl-to-voxel': glob.glob(os.path.join('data', '*.[sS][tT][lL]'))
     },
     include_package_data=True,
     zip_safe=False,
