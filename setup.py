@@ -17,8 +17,7 @@ setup(
     url='https://github.com/cpederkoff/stl-to-voxel',
     download_url='https://github.com/cpederkoff/stl-to-voxel/releases',
     install_requires=['numpy', 'Pillow', 'matplotlib'],
-    packages=['stltovoxel'],
-    package_dir={'stltovoxel': ''},
+    packages=[''],
     python_requires='>=3',
     package_data={
         'stl-to-voxel': glob.glob(os.path.join('data', '*.[sS][tT][lL]'))
